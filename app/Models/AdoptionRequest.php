@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class AdoptionRequest extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'post_id',
+        'message',
+        'status',
+    ];
+
+    protected $casts = [
+        'status' => 'string',
+    ];
+
+    // المستخدم الذي أرسل طلب التبني
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    // المنشور الذي يخصه طلب التبني
+    public function post()
+    {
+        return $this->belongsTo(Post::class);
+    }
+}

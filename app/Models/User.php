@@ -2,31 +2,80 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    protected $fillable = [
+        'full_name',
+        'username',
+        'email',
+        'password',
+        'phone',
+        'avatar_url',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    public function getAuthPassword()
+{
+    return $this->password;
+}
+
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // منشورات المستخدم
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    // المنشورات التي أعجب بها المستخدم
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
+
+    // تعليقات المستخدم
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    // طلبات التبني التي أرسلها المستخدم
+    public function adoptionRequests()
+    {
+        return $this->hasMany(AdoptionRequest::class);
+    }
+
+    // طلبات الإنقاذ التي أرسلها المستخدم
+    public function rescueRequests()
+    {
+        return $this->hasMany(RescueRequest::class);
+    }
+
+    // الإشعارات التي يستلمها المستخدم
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    // الإشعارات التي تسبب بها المستخدم
+    public function sentNotifications()
+    {
+        return $this->hasMany(Notification::class, 'sender_id');
     }
 }
