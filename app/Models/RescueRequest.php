@@ -12,7 +12,6 @@ class RescueRequest extends Model
     protected $fillable = [
         'user_id',
         'post_id',
-        'message',
         'status',
     ];
 

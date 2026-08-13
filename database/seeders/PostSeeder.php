@@ -26,7 +26,6 @@ class PostSeeder extends Seeder
         $siamese = Breed::where('name', 'Siamese')->first();
         $british = Breed::where('name', 'British Shorthair')->first();
         $ragdoll = Breed::where('name', 'Ragdoll')->first();
-        $domestic = Breed::where('name', 'Domestic Shorthair')->first();
 
         Post::create([
             'user_id' => $sara->id,
@@ -70,6 +69,7 @@ class PostSeeder extends Seeder
             'personality_description' => 'Very gentle and social. He gets along well with people and other cats.',
             'is_neutered' => false,
             'is_vaccinated' => true,
+            'contact_number' => '0500000001',
             'status' => 'ACTIVE',
         ]);
 
@@ -85,44 +85,29 @@ class PostSeeder extends Seeder
             'personality_description' => 'Playful and energetic. She loves interactive toys and being around people.',
             'is_neutered' => true,
             'is_vaccinated' => true,
+            'contact_number' => '0500000002',
             'status' => 'ACTIVE',
         ]);
 
         Post::create([
             'user_id' => $sara->id,
             'post_type' => 'RESCUE',
-            'name' => null,
-            'age_years' => null,
-            'gender' => 'UNKNOWN',
-            'breed_id' => $domestic->id,
             'city_id' => $makkah->id,
             'image_url' => 'https://images.unsplash.com/photo-1552933529-e359b2477252',
-            'personality_description' => 'The cat appears calm but is currently in need of medical attention.',
-            'is_neutered' => null,
-            'is_vaccinated' => null,
-            'urgency_level' => 'URGENT',
-            'condition' => 'Injured',
+            'is_injured' => true,
             'injury_description' => 'The cat has an injured leg and needs veterinary care as soon as possible.',
-            'contact_number' => '0500000001',
+            'contact_number' => '0500000003',
             'status' => 'ACTIVE',
         ]);
 
         Post::create([
             'user_id' => $ahmed->id,
             'post_type' => 'RESCUE',
-            'name' => null,
-            'age_years' => null,
-            'gender' => 'FEMALE',
-            'breed_id' => null,
             'city_id' => $jeddah->id,
             'image_url' => 'https://images.unsplash.com/photo-1543852786-1cf6624b9987',
-            'personality_description' => 'A friendly stray cat that needs temporary shelter and basic care.',
-            'is_neutered' => null,
-            'is_vaccinated' => null,
-            'urgency_level' => 'MEDIUM',
-            'condition' => 'Needs Care',
+            'is_injured' => false,
             'injury_description' => null,
-            'contact_number' => '0500000002',
+            'contact_number' => '0500000004',
             'status' => 'ACTIVE',
         ]);
     }

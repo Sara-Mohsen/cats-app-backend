@@ -18,11 +18,8 @@ class NotificationSeeder extends Seeder
 
         $luna = Post::where('name', 'Luna')->first();
         $oliver = Post::where('name', 'Oliver')->first();
-        $bella = Post::where('name', 'Bella')->first();
 
-        $rescuePost = Post::where('post_type', 'RESCUE')
-            ->where('urgency_level', 'URGENT')
-            ->first();
+        $rescuePost = Post::where('post_type', 'RESCUE')->first();
 
         $notifications = [
             // Like

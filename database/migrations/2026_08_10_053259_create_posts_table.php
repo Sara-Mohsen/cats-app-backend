@@ -26,9 +26,8 @@ return new class extends Migration
 
     $table->enum('gender', [
         'MALE',
-        'FEMALE',
-        'UNKNOWN'
-    ])->default('UNKNOWN');
+        'FEMALE'
+    ])->nullable();
 
     $table->foreignId('breed_id')
         ->nullable()
@@ -44,13 +43,7 @@ return new class extends Migration
     $table->boolean('is_neutered')->nullable();
     $table->boolean('is_vaccinated')->nullable();
 
-    $table->enum('urgency_level', [
-        'LOW',
-        'MEDIUM',
-        'URGENT'
-    ])->nullable();
-
-    $table->string('condition', 100)->nullable();
+    $table->boolean('is_injured')->nullable();
 
     $table->text('injury_description')->nullable();
 
@@ -58,7 +51,6 @@ return new class extends Migration
 
     $table->enum('status', [
         'ACTIVE',
-        'RESOLVED',
         'CLOSED'
     ])->default('ACTIVE');
 

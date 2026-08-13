@@ -23,8 +23,7 @@ class Post extends Model
         'personality_description',
         'is_neutered',
         'is_vaccinated',
-        'urgency_level',
-        'condition',
+        'is_injured',
         'injury_description',
         'contact_number',
         'status',
@@ -33,6 +32,7 @@ class Post extends Model
     protected $casts = [
         'is_neutered' => 'boolean',
         'is_vaccinated' => 'boolean',
+        'is_injured' => 'boolean',
     ];
 
     // صاحب المنشور

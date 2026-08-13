@@ -12,41 +12,37 @@ class RescueRequestSeeder extends Seeder
     public function run(): void
     {
         $sara = User::where('username', 'sara')->first();
-        $ahmed = User::where('username', 'ahmed')->first();
         $nora = User::where('username', 'nora')->first();
         $faisal = User::where('username', 'faisal')->first();
+        $ahmed = User::where('username', 'ahmed')->first();
 
         $injuredCat = Post::where('post_type', 'RESCUE')
-            ->where('urgency_level', 'URGENT')
+            ->where('is_injured', true)
             ->first();
 
-        $careCat = Post::where('post_type', 'RESCUE')
-            ->where('urgency_level', 'MEDIUM')
+        $healthyCat = Post::where('post_type', 'RESCUE')
+            ->where('is_injured', false)
             ->first();
 
         $requests = [
             [
                 'user_id' => $nora->id,
                 'post_id' => $injuredCat->id,
-                'message' => 'I can help take the cat to a veterinary clinic and cover the initial treatment.',
                 'status' => 'PENDING',
             ],
             [
                 'user_id' => $faisal->id,
-                'post_id' => $injuredCat->id,
-                'message' => 'I can provide transportation and help arrange emergency veterinary care.',
+                'post_id' => $healthyCat->id,
                 'status' => 'ACCEPTED',
             ],
             [
                 'user_id' => $sara->id,
-                'post_id' => $careCat->id,
-                'message' => 'I can temporarily foster the cat and provide food and basic care.',
+                'post_id' => $injuredCat->id,
                 'status' => 'ACCEPTED',
             ],
             [
-                'user_id' => $faisal->id,
-                'post_id' => $careCat->id,
-                'message' => 'I would be available to help with the cat if needed.',
+                'user_id' => $ahmed->id,
+                'post_id' => $healthyCat->id,
                 'status' => 'REJECTED',
             ],
         ];

@@ -21,9 +21,6 @@ return new class extends Migration
                 ->constrained('posts')
                 ->cascadeOnDelete();
 
-            // رسالة اختيارية من الشخص الذي يعرض المساعدة
-            $table->text('message')->nullable();
-
             // حالة الطلب
             $table->enum('status', [
                 'PENDING',
