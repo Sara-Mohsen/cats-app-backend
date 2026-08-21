@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
-    // GET /api/notifications
     public function index(Request $request)
     {
         $notifications = Notification::where(
@@ -26,7 +25,6 @@ class NotificationController extends Controller
         ]);
     }
 
-    // PATCH /api/notifications/{id}/read
     public function markAsRead(Request $request, int $id)
     {
         $notification = Notification::where('user_id', $request->user()->id)
@@ -41,7 +39,6 @@ class NotificationController extends Controller
         ]);
     }
 
-    // PATCH /api/notifications/read-all
     public function markAllAsRead(Request $request)
     {
         Notification::where('user_id', $request->user()->id)

@@ -19,13 +19,11 @@ class AdoptionRequest extends Model
         'status' => 'string',
     ];
 
-    // المستخدم الذي أرسل طلب التبني
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // المنشور الذي يخصه طلب التبني
     public function post()
     {
         return $this->belongsTo(Post::class);

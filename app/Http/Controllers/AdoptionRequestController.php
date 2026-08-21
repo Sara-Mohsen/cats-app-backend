@@ -26,14 +26,12 @@ class AdoptionRequestController extends Controller
             ], 422);
         }
 
-        // ممنوع صاحب المنشور يتبنى قطته
         if ($post->user_id === $request->user()->id) {
             return response()->json([
                 'message' => 'You cannot submit an adoption request for your own post.'
             ], 403);
         }
 
-        // التأكد أن المستخدم ما أرسل طلب من قبل
         $existingRequest = AdoptionRequest::where('user_id', $request->user()->id)
             ->where('post_id', $post->id)
             ->first();
@@ -50,7 +48,6 @@ class AdoptionRequestController extends Controller
             'status' => 'PENDING',
         ]);
 
-        // إرسال إشعار لصاحب البوست
         Notification::create([
             'user_id' => $post->user_id,
             'sender_id' => $request->user()->id,
@@ -73,14 +70,12 @@ class AdoptionRequestController extends Controller
     {
         $post = Post::findOrFail($id);
 
-        // نتأكد أن البوست تبني
         if ($post->post_type !== 'ADOPTION') {
             return response()->json([
                 'message' => 'This post is not an adoption post.'
             ], 422);
         }
 
-        // فقط صاحب البوست يقدر يشوف الطلبات
         if ($post->user_id !== $request->user()->id) {
             return response()->json([
                 'message' => 'You are not authorized to view these requests.'

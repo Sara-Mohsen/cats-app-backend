@@ -24,19 +24,16 @@ class Notification extends Model
         'is_read' => 'boolean',
     ];
 
-    // المستخدم الذي استلم الإشعار
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // المستخدم الذي تسبب في الإشعار
     public function sender()
     {
         return $this->belongsTo(User::class, 'sender_id');
     }
 
-    // المنشور المرتبط بالإشعار
     public function post()
     {
         return $this->belongsTo(Post::class);

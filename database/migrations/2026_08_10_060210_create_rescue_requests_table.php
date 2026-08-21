@@ -11,17 +11,14 @@ return new class extends Migration
         Schema::create('rescue_requests', function (Blueprint $table) {
             $table->id();
 
-            // المستخدم الذي يعرض المساعدة
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->cascadeOnDelete();
 
-            // منشور الإنقاذ
             $table->foreignId('post_id')
                 ->constrained('posts')
                 ->cascadeOnDelete();
 
-            // حالة الطلب
             $table->enum('status', [
                 'PENDING',
                 'ACCEPTED',
@@ -32,7 +29,6 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
-            // منع إرسال أكثر من طلب مساعدة لنفس المنشور
             $table->unique(['user_id', 'post_id']);
         });
     }

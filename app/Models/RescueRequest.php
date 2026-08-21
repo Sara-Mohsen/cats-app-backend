@@ -19,13 +19,11 @@ class RescueRequest extends Model
         'status' => 'string',
     ];
 
-    // المستخدم الذي عرض المساعدة
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // منشور الإنقاذ الذي يخصه الطلب
     public function post()
     {
         return $this->belongsTo(Post::class);

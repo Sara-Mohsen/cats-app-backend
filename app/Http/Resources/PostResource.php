@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 class PostResource extends JsonResource
 {
@@ -22,16 +23,12 @@ class PostResource extends JsonResource
                 'Rescue #' . str_pad($this->id, 2, '0', STR_PAD_LEFT)
             ),
 
-            'image' => $this->image_url,
-
+            'image' => $this->image_url
+                ? asset('storage/' . $this->image_url)
+                : null,
 
             'created_at' => $this->created_at,
 
-            /*
-            |--------------------------------------------------------------------------
-            | Normal / Adoption
-            |--------------------------------------------------------------------------
-            */
 
             'name' => $this->when(
                 !$isRescue,
@@ -63,12 +60,6 @@ class PostResource extends JsonResource
                 $this->is_vaccinated
             ),
 
-            /*
-            |--------------------------------------------------------------------------
-            | Adoption only
-            |--------------------------------------------------------------------------
-            */
-
             'contact_number' => $this->when(
                 $isAdoption || $isRescue,
                 $this->contact_number
@@ -80,12 +71,6 @@ class PostResource extends JsonResource
             ),
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | Rescue only
-            |--------------------------------------------------------------------------
-            */
-
             'is_injured' => $this->when(
                 $isRescue,
                 $this->is_injured
@@ -96,11 +81,6 @@ class PostResource extends JsonResource
                 $this->injury_description
             ),
 
-            /*
-            |--------------------------------------------------------------------------
-            | Relations
-            |--------------------------------------------------------------------------
-            */
 
             'breed' => $this->when(
                 !$isRescue,

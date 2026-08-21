@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-    // GET /api/posts/{id}/comments
     public function index(int $id)
     {
         $post = Post::findOrFail($id);
@@ -25,7 +24,6 @@ class CommentController extends Controller
         ]);
     }
 
-    // POST /api/posts/{id}/comments
     public function store(Request $request, int $id)
     {
         $request->validate([
@@ -40,7 +38,6 @@ class CommentController extends Controller
             'content' => $request->content,
         ]);
 
-        // إرسال إشعار لصاحب البوست
         if ($post->user_id !== $request->user()->id) {
             Notification::create([
                 'user_id' => $post->user_id,
@@ -59,7 +56,6 @@ class CommentController extends Controller
         ], 201);
     }
 
-    // DELETE /api/comments/{id}
     public function destroy(Request $request, int $id)
     {
         $comment = Comment::findOrFail($id);

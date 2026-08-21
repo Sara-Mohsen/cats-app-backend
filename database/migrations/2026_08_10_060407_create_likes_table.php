@@ -19,7 +19,6 @@ return new class extends Migration
 
             $table->timestamp('created_at')->useCurrent();
 
-            // يمنع المستخدم من الإعجاب بنفس المنشور أكثر من مرة
             $table->primary(['user_id', 'post_id']);
         });
     }

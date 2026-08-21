@@ -11,17 +11,14 @@ return new class extends Migration
         Schema::create('adoption_requests', function (Blueprint $table) {
             $table->id();
 
-            // المستخدم الذي يطلب التبني
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->cascadeOnDelete();
 
-            // منشور القطة
             $table->foreignId('post_id')
                 ->constrained('posts')
                 ->cascadeOnDelete();
 
-            // حالة الطلب
             $table->enum('status', [
                 'PENDING',
                 'APPROVED',
@@ -32,7 +29,6 @@ return new class extends Migration
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
 
-            // منع المستخدم من إرسال أكثر من طلب لنفس المنشور
             $table->unique(['user_id', 'post_id']);
         });
     }

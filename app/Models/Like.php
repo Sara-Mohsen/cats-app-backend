@@ -16,13 +16,11 @@ class Like extends Model
 
     const UPDATED_AT = null;
 
-    // المستخدم الذي وضع اللايك
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // المنشور الذي عليه اللايك
     public function post()
     {
         return $this->belongsTo(Post::class);

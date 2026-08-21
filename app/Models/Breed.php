@@ -14,7 +14,6 @@ class Breed extends Model
         'description',
     ];
 
-    // الفصيلة تحتوي على منشورات كثيرة
     public function posts()
     {
         return $this->hasMany(Post::class);

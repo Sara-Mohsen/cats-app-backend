@@ -12,8 +12,6 @@ class City extends Model
     protected $fillable = [
         'name',
     ];
-
-    // المدينة تحتوي على منشورات كثيرة
     public function posts()
     {
         return $this->hasMany(Post::class);

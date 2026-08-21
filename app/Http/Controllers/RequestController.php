@@ -8,11 +8,6 @@ use Illuminate\Http\Request;
 
 class RequestController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Adoption Requests
-    |--------------------------------------------------------------------------
-    */
 
     public function updateAdoptionRequest(
         Request $request,
@@ -21,7 +16,6 @@ class RequestController extends Controller
         $adoptionRequest = AdoptionRequest::with('post')
             ->findOrFail($id);
 
-        // فقط صاحب بوست التبني يقدر يقرر
         if ($adoptionRequest->post->user_id !== $request->user()->id) {
             return response()->json([
                 'message' => 'You are not authorized to manage this request.'
@@ -32,7 +26,6 @@ class RequestController extends Controller
             'status' => 'required|in:APPROVED,REJECTED',
         ]);
 
-        // ما نقدر نعدل طلب محسوم
         if ($adoptionRequest->status !== 'PENDING') {
             return response()->json([
                 'message' => 'This request has already been processed.'
@@ -43,14 +36,12 @@ class RequestController extends Controller
             'status' => $validated['status'],
         ]);
 
-        // إذا تمت الموافقة، نقفل البوست
         if ($validated['status'] === 'APPROVED') {
 
             $adoptionRequest->post->update([
                 'status' => 'CLOSED',
             ]);
 
-            // نرفض باقي الطلبات المعلقة
             AdoptionRequest::where('post_id', $adoptionRequest->post_id)
                 ->where('id', '!=', $adoptionRequest->id)
                 ->where('status', 'PENDING')
@@ -73,12 +64,6 @@ class RequestController extends Controller
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Rescue Requests
-    |--------------------------------------------------------------------------
-    */
-
     public function updateRescueRequest(
         Request $request,
         int $id
@@ -86,7 +71,6 @@ class RequestController extends Controller
         $rescueRequest = RescueRequest::with('post')
             ->findOrFail($id);
 
-        // فقط صاحب بلاغ الإنقاذ يقدر يقرر
         if ($rescueRequest->post->user_id !== $request->user()->id) {
             return response()->json([
                 'message' => 'You are not authorized to manage this request.'
@@ -97,7 +81,6 @@ class RequestController extends Controller
             'status' => 'required|in:ACCEPTED,REJECTED',
         ]);
 
-        // ما نقدر نعدل طلب محسوم
         if ($rescueRequest->status !== 'PENDING') {
             return response()->json([
                 'message' => 'This request has already been processed.'
@@ -108,14 +91,12 @@ class RequestController extends Controller
             'status' => $validated['status'],
         ]);
 
-        // إذا تمت الموافقة، نقفل بلاغ الإنقاذ
         if ($validated['status'] === 'ACCEPTED') {
 
             $rescueRequest->post->update([
                 'status' => 'CLOSED',
             ]);
 
-            // نرفض باقي الطلبات المعلقة
             RescueRequest::where('post_id', $rescueRequest->post_id)
                 ->where('id', '!=', $rescueRequest->id)
                 ->where('status', 'PENDING')

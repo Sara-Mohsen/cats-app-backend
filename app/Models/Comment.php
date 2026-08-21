@@ -17,13 +17,11 @@ class Comment extends Model
 
     const UPDATED_AT = null;
 
-    // المستخدم الذي كتب التعليق
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // المنشور الذي ينتمي إليه التعليق
     public function post()
     {
         return $this->belongsTo(Post::class);

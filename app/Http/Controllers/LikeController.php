@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class LikeController extends Controller
 {
-    // POST /api/posts/{id}/like
     public function toggle(Request $request, int $id)
     {
         $post = Post::findOrFail($id);
@@ -20,7 +19,6 @@ class LikeController extends Controller
             ->where('post_id', $post->id)
             ->first();
 
-        // إذا موجود → Unlike
         if ($like) {
             $like->delete();
 
@@ -30,13 +28,11 @@ class LikeController extends Controller
             ]);
         }
 
-        // إذا غير موجود → Like
         Like::create([
             'user_id' => $user->id,
             'post_id' => $post->id,
         ]);
 
-        // إرسال إشعار لصاحب البوست
         if ($post->user_id !== $user->id) {
             Notification::create([
                 'user_id' => $post->user_id,

@@ -11,17 +11,14 @@ return new class extends Migration
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
 
-            // المستخدم الذي كتب التعليق
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->cascadeOnDelete();
 
-            // المنشور الذي عليه التعليق
             $table->foreignId('post_id')
                 ->constrained('posts')
                 ->cascadeOnDelete();
 
-            // محتوى التعليق
             $table->text('content');
 
             $table->timestamp('created_at')->useCurrent();

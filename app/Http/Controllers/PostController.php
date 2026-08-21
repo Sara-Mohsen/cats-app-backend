@@ -8,20 +8,25 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    public function index()
-    {
-        $posts = Post::with([
-            'user',
-            'breed',
-            'city',
-        ])
-        ->latest()
-        ->get();
+    public function index(Request $request)
+{
+    $query = Post::with([
+        'user',
+        'breed',
+        'city',
+    ])->latest();
 
-        return response()->json([
-            'posts' => PostResource::collection($posts),
-        ]);
+    if ($request->has('type')) {
+        $query->where('post_type', $request->type);
     }
+
+    $posts = $query->get();
+
+    return response()->json([
+        'posts' => PostResource::collection($posts),
+    ]);
+}
+
 
     public function show(int $id)
     {
