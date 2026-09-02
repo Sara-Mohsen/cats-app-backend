@@ -17,6 +17,7 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
+        'city_id',
         'avatar_url',
     ];
 
@@ -71,4 +72,15 @@ class User extends Authenticatable
     {
         return $this->hasMany(Notification::class, 'sender_id');
     }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function likedPosts()
+    {
+        return $this->belongsToMany(Post::class, 'likes', 'user_id', 'post_id')->withTimestamps();
+    }
+
 }

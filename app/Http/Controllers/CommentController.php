@@ -44,7 +44,7 @@ class CommentController extends Controller
                 'sender_id' => $request->user()->id,
                 'post_id' => $post->id,
                 'type' => 'COMMENT',
-                'message' => $request->user()->username . ' commented on your post.',
+                'message' =>' commented on your post.',
             ]);
         }
 

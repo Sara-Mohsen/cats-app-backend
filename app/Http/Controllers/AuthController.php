@@ -15,7 +15,7 @@ class AuthController extends Controller
             'full_name' => 'required|string|max:100',
             'username' => 'required|string|max:50|unique:users,username',
             'email' => 'required|email|max:100|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => 'required|string|min:8',
             'phone' => 'nullable|string|max:20',
         ]);
 
@@ -37,35 +37,71 @@ class AuthController extends Controller
     }
 
     public function login(Request $request)
-{
-    $credentials = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|string',
-    ]);
+    {
+        $credentials = $request->validate([
+            'login'    => 'required|string',
+            'password' => 'required|string',
+        ]);
 
-    $user = User::where('email', $credentials['email'])->first();
+        $user = User::where('email', $credentials['login'])
+                    ->orWhere('username', $credentials['login'])
+                    ->first();
 
-    if (!$user || !Hash::check($credentials['password'], $user->password)) {
-        throw ValidationException::withMessages([
-            'email' => ['The provided credentials are incorrect.'],
+        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+            throw ValidationException::withMessages([
+                'login' => ['The provided credentials are incorrect.'],
+            ]);
+        }
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login successful.',
+            'user' => $user,
+            'token' => $token,
         ]);
     }
 
-    $token = $user->createToken('auth_token')->plainTextToken;
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
 
-    return response()->json([
-        'message' => 'Login successful.',
-        'user' => $user,
-        'token' => $token,
-    ]);
-}
+        return response()->json([
+            'message' => 'Logged out successfully.',
+        ]);
+    }
 
-public function logout(Request $request)
-{
-    $request->user()->currentAccessToken()->delete();
 
-    return response()->json([
-        'message' => 'Logged out successfully.',
-    ]);
-}
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'full_name' => 'nullable|string|max:255',
+            'email'     => 'nullable|email|unique:users,email,' . $user->id,
+            'phone'     => 'nullable|string|max:20',
+            'city_id'   => 'nullable|exists:cities,id',
+            'avatar'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar_url = $path;
+        }
+
+        if ($request->filled('full_name')) $user->full_name = $request->full_name;
+        if ($request->filled('email'))     $user->email = $request->email;
+        if ($request->filled('phone'))     $user->phone = $request->phone;
+
+        if ($request->has('city_id')) {
+            $user->city_id = $request->city_id;
+        }
+
+        $user->save();
+
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'user' => $user->load('city')
+        ]);
+    }
 }

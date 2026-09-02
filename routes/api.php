@@ -10,34 +10,49 @@ use App\Http\Controllers\AdoptionRequestController;
 use App\Http\Controllers\RescueRequestController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RequestController;
+use App\Models\City;
+use App\Models\Breed;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
 Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
     return response()->json([
-        'user' => $request->user(),
+        'user' => $request->user()->load('city'),
     ]);
 });
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
+Route::get('/cities', function () {
+    return response()->json(City::all());
+});
+
+Route::get('/breeds', function () {
+    return response()->json(Breed::all());
+});
+
 Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{id}', [PostController::class, 'show']);
+Route::get('/posts/{id}/comments', [CommentController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    // Posts
+    Route::put('/me', [AuthController::class, 'updateProfile']);
+    Route::post('/me', [AuthController::class, 'updateProfile']);
+
+    Route::post('/posts', [PostController::class, 'store']);
     Route::put('/posts/{id}', [PostController::class, 'update']);
     Route::delete('/posts/{id}', [PostController::class, 'destroy']);
 
-    // Comments
-    Route::get('/posts/{id}/comments', [CommentController::class, 'index']);
     Route::post('/posts/{id}/comments', [CommentController::class, 'store']);
     Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
 
-    // Likes
     Route::post('/posts/{id}/like', [LikeController::class, 'toggle']);
+    Route::get('/favorites', [LikeController::class, 'favorites']);
+    Route::get('/my-posts', [PostController::class, 'myPosts']);
 
-    // Adoption Requests
+    Route::patch('/notifications/{id}/status', [NotificationController::class, 'updateStatus']);
+
     Route::post(
         '/posts/{id}/adoption-requests',
         [AdoptionRequestController::class, 'store']
@@ -48,7 +63,6 @@ Route::middleware('auth:sanctum')->group(function () {
         [AdoptionRequestController::class, 'index']
     );
 
-    // Rescue Requests
     Route::post(
         '/posts/{id}/rescue-requests',
         [RescueRequestController::class, 'store']
@@ -59,7 +73,6 @@ Route::middleware('auth:sanctum')->group(function () {
         [RescueRequestController::class, 'index']
     );
 
-    // Notifications
     Route::get(
         '/notifications',
         [NotificationController::class, 'index']
@@ -75,18 +88,18 @@ Route::middleware('auth:sanctum')->group(function () {
         [NotificationController::class, 'markAllAsRead']
     );
 
-    // Adoption
+    Route::patch(
+        '/notifications/{id}/status',
+        [NotificationController::class, 'updateStatus']
+    );
+
     Route::patch(
         '/adoption-requests/{id}',
         [RequestController::class, 'updateAdoptionRequest']
     );
 
-    // Rescue
     Route::patch(
         '/rescue-requests/{id}',
         [RequestController::class, 'updateRescueRequest']
     );
-
-    //Create
-    Route::post('/posts', [PostController::class, 'store']);
 });

@@ -9,60 +9,44 @@ use Illuminate\Http\Request;
 
 class AdoptionRequestController extends Controller
 {
-    // POST /api/posts/{id}/adoption-requests
     public function store(Request $request, int $id)
     {
         $post = Post::findOrFail($id);
 
-        if ($post->post_type !== 'ADOPTION') {
-            return response()->json([
-                'message' => 'This post is not available for adoption.'
-            ], 422);
-        }
-
-        if ($post->status !== 'ACTIVE') {
-            return response()->json([
-                'message' => 'This post is no longer available for adoption.'
-            ], 422);
+        if (strtoupper($post->post_type) !== 'ADOPTION') {
+            return response()->json(['message' => 'This post is not available for adoption.'], 422);
         }
 
         if ($post->user_id === $request->user()->id) {
-            return response()->json([
-                'message' => 'You cannot submit an adoption request for your own post.'
-            ], 403);
+            return response()->json(['message' => 'You cannot request your own post.'], 403);
         }
 
-        $existingRequest = AdoptionRequest::where('user_id', $request->user()->id)
+        $existing = AdoptionRequest::where('user_id', $request->user()->id)
             ->where('post_id', $post->id)
             ->first();
 
-        if ($existingRequest) {
-            return response()->json([
-                'message' => 'You have already submitted an adoption request for this post.'
-            ], 409);
+        if ($existing) {
+            return response()->json(['message' => 'Request already submitted.'], 409);
         }
 
         $adoptionRequest = AdoptionRequest::create([
             'user_id' => $request->user()->id,
             'post_id' => $post->id,
-            'status' => 'PENDING',
+            'status'  => 'PENDING',
         ]);
 
         Notification::create([
-            'user_id' => $post->user_id,
+            'user_id'   => $post->user_id,
             'sender_id' => $request->user()->id,
-            'post_id' => $post->id,
-            'type' => 'ADOPTION_REQUEST',
-            'message' => $request->user()->username . ' sent you an adoption request.',
+            'post_id'   => $post->id,
+            'type'      => 'ADOPTION',
+            'message'   => 'submitted an adoption request for your cat.',
+            'is_read'   => false,
         ]);
 
         return response()->json([
             'message' => 'Adoption request submitted successfully.',
-            'request' => [
-                'id' => $adoptionRequest->id,
-                'post_id' => $adoptionRequest->post_id,
-                'status' => $adoptionRequest->status,
-            ],
+            'request' => $adoptionRequest,
         ], 201);
     }
 

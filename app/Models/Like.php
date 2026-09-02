@@ -14,7 +14,17 @@ class Like extends Model
         'post_id',
     ];
 
+    protected $primaryKey = ['user_id', 'post_id'];
+    public $incrementing = false;
+
     const UPDATED_AT = null;
+
+    protected function setKeysForSaveQuery($query)
+    {
+        return $query
+            ->where('user_id', $this->getAttribute('user_id'))
+            ->where('post_id', $this->getAttribute('post_id'));
+    }
 
     public function user()
     {

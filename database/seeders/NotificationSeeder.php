@@ -22,7 +22,6 @@ class NotificationSeeder extends Seeder
         $rescuePost = Post::where('post_type', 'RESCUE')->first();
 
         $notifications = [
-            // Like
             [
                 'user_id' => $sara->id,
                 'sender_id' => $ahmed->id,
@@ -32,7 +31,6 @@ class NotificationSeeder extends Seeder
                 'is_read' => false,
             ],
 
-            // Comment
             [
                 'user_id' => $sara->id,
                 'sender_id' => $nora->id,
@@ -42,7 +40,6 @@ class NotificationSeeder extends Seeder
                 'is_read' => false,
             ],
 
-            // Adoption Request
             [
                 'user_id' => $nora->id,
                 'sender_id' => $sara->id,
@@ -52,7 +49,6 @@ class NotificationSeeder extends Seeder
                 'is_read' => false,
             ],
 
-            // Adoption Request - another user
             [
                 'user_id' => $nora->id,
                 'sender_id' => $ahmed->id,
@@ -62,7 +58,6 @@ class NotificationSeeder extends Seeder
                 'is_read' => true,
             ],
 
-            // Rescue Request
             [
                 'user_id' => $sara->id,
                 'sender_id' => $nora->id,
@@ -72,7 +67,6 @@ class NotificationSeeder extends Seeder
                 'is_read' => false,
             ],
 
-            // System
             [
                 'user_id' => $faisal->id,
                 'sender_id' => null,

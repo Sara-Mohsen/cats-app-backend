@@ -39,7 +39,7 @@ class LikeController extends Controller
                 'sender_id' => $user->id,
                 'post_id' => $post->id,
                 'type' => 'LIKE',
-                'message' => $user->username . ' liked your post.',
+                'message' => ' liked your post.',
             ]);
         }
 
@@ -47,5 +47,24 @@ class LikeController extends Controller
             'message' => 'Post liked successfully.',
             'liked' => true,
         ], 201);
+    }
+
+    public function favorites(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            $favoritePosts = Post::whereHas('likes', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })->with(['city', 'breed'])->get();
+
+            return response()->json([
+                'data' => $favoritePosts
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

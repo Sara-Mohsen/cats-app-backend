@@ -24,7 +24,18 @@ class PostResource extends JsonResource
             ),
 
             'image' => $this->image_url
-                ? asset('storage/' . $this->image_url)
+                ? (
+                    str_starts_with($this->image_url, 'http://') ||
+                    str_starts_with($this->image_url, 'https://')
+                        ? $this->image_url
+                        : asset(
+                            'storage/' .
+                            ltrim(
+                                preg_replace('#^/?storage/#', '', $this->image_url),
+                                '/'
+                            )
+                        )
+                )
                 : null,
 
             'created_at' => $this->created_at,
@@ -100,6 +111,10 @@ class PostResource extends JsonResource
                 'username' => $this->user->username,
                 'avatar_url' => $this->user->avatar_url,
             ],
+
+            'is_liked' => auth('sanctum')->check()
+                ? $this->likes->where('user_id', auth('sanctum')->id())->isNotEmpty()
+                : false,
         ];
     }
 }

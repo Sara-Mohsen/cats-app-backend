@@ -4,17 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\AdoptionRequest;
 use App\Models\RescueRequest;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class RequestController extends Controller
 {
-
-    public function updateAdoptionRequest(
-        Request $request,
-        int $id
-    ) {
-        $adoptionRequest = AdoptionRequest::with('post')
-            ->findOrFail($id);
+    public function updateAdoptionRequest(Request $request, int $id)
+    {
+        $adoptionRequest = AdoptionRequest::with('post')->findOrFail($id);
 
         if ($adoptionRequest->post->user_id !== $request->user()->id) {
             return response()->json([
@@ -23,7 +20,7 @@ class RequestController extends Controller
         }
 
         $validated = $request->validate([
-            'status' => 'required|in:APPROVED,REJECTED',
+            'status' => 'required|in:APPROVED,ACCEPTED,REJECTED',
         ]);
 
         if ($adoptionRequest->status !== 'PENDING') {
@@ -32,44 +29,47 @@ class RequestController extends Controller
             ], 409);
         }
 
+        $statusToSave = ($validated['status'] === 'APPROVED') ? 'ACCEPTED' : $validated['status'];
+
         $adoptionRequest->update([
-            'status' => $validated['status'],
+            'status' => $statusToSave,
         ]);
 
-        if ($validated['status'] === 'APPROVED') {
+        Notification::create([
+            'user_id'   => $adoptionRequest->user_id,
+            'sender_id' => $request->user()->id,
+            'post_id'   => $adoptionRequest->post_id,
+            'type'      => 'adoption',
+            'message'   => $statusToSave === 'ACCEPTED'
+                            ? 'accepted your adoption request'
+                            : 'declined your adoption request',
+            'is_read'   => false,
+        ]);
 
-            $adoptionRequest->post->update([
-                'status' => 'CLOSED',
-            ]);
+        if ($statusToSave === 'ACCEPTED') {
+            $adoptionRequest->post->update(['status' => 'CLOSED']);
 
             AdoptionRequest::where('post_id', $adoptionRequest->post_id)
                 ->where('id', '!=', $adoptionRequest->id)
                 ->where('status', 'PENDING')
-                ->update([
-                    'status' => 'REJECTED',
-                ]);
+                ->update(['status' => 'REJECTED']);
         }
 
         return response()->json([
-            'message' => $validated['status'] === 'APPROVED'
+            'message' => $statusToSave === 'ACCEPTED'
                 ? 'Adoption request approved successfully.'
                 : 'Adoption request rejected successfully.',
-
             'request' => [
-                'id' => $adoptionRequest->id,
+                'id'      => $adoptionRequest->id,
                 'post_id' => $adoptionRequest->post_id,
-                'status' => $adoptionRequest->status,
+                'status'  => $adoptionRequest->status,
             ],
         ]);
     }
 
-
-    public function updateRescueRequest(
-        Request $request,
-        int $id
-    ) {
-        $rescueRequest = RescueRequest::with('post')
-            ->findOrFail($id);
+    public function updateRescueRequest(Request $request, int $id)
+    {
+        $rescueRequest = RescueRequest::with('post')->findOrFail($id);
 
         if ($rescueRequest->post->user_id !== $request->user()->id) {
             return response()->json([
@@ -91,29 +91,34 @@ class RequestController extends Controller
             'status' => $validated['status'],
         ]);
 
-        if ($validated['status'] === 'ACCEPTED') {
+        Notification::create([
+            'user_id'   => $rescueRequest->user_id,
+            'sender_id' => $request->user()->id,
+            'post_id'   => $rescueRequest->post_id,
+            'type'      => 'rescue',
+            'message'   => $validated['status'] === 'ACCEPTED'
+                            ? 'accepted your rescue request'
+                            : 'declined your rescue request',
+            'is_read'   => false,
+        ]);
 
-            $rescueRequest->post->update([
-                'status' => 'CLOSED',
-            ]);
+        if ($validated['status'] === 'ACCEPTED') {
+            $rescueRequest->post->update(['status' => 'CLOSED']);
 
             RescueRequest::where('post_id', $rescueRequest->post_id)
                 ->where('id', '!=', $rescueRequest->id)
                 ->where('status', 'PENDING')
-                ->update([
-                    'status' => 'REJECTED',
-                ]);
+                ->update(['status' => 'REJECTED']);
         }
 
         return response()->json([
             'message' => $validated['status'] === 'ACCEPTED'
                 ? 'Rescue request accepted successfully.'
                 : 'Rescue request rejected successfully.',
-
             'request' => [
-                'id' => $rescueRequest->id,
+                'id'      => $rescueRequest->id,
                 'post_id' => $rescueRequest->post_id,
-                'status' => $rescueRequest->status,
+                'status'  => $rescueRequest->status,
             ],
         ]);
     }
